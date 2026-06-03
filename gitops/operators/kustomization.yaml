@@ -3,5 +3,6 @@ kind: Kustomization
 
 resources:
   - lightspeed-operator
+  - nvidia-gpu-operator
   - rhoai
   - web-terminal
