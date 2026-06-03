@@ -42,7 +42,7 @@ ready() {
   ols=$(oc get olsconfig cluster -o jsonpath='{.status.overallStatus}' 2>/dev/null)
   dm=$(oc get olsconfig cluster -o jsonpath='{.spec.ols.defaultModel}' 2>/dev/null)
   app=$(oc get pods -n openshift-lightspeed --no-headers 2>/dev/null | grep -c 'app-server.*Running')
-  pred=$(oc get pods -n lightspeed-llm --no-headers 2>/dev/null | grep -c ' 2/2 .*Running')
+  pred=$(oc get pods -n gpt-oss-20b --no-headers 2>/dev/null | grep -c ' 2/2 .*Running')
   echo "OLSConfig=$ols  model=$dm  app-server-running=$app  predictor-2/2=$pred"
   { [ "$ols" = Ready ] && [ "$app" -ge 1 ]; } \
     && echo "✅ READY to prompt" \
@@ -163,7 +163,7 @@ GPU + serving stack; ~30–45 min first time.
 coming up, then the model load):
 
 ```bash
-oc get pods -n lightspeed-llm -w                                    # want: predictor 2/2 Running
+oc get pods -n gpt-oss-20b -w                                    # want: predictor 2/2 Running
 oc get olsconfig cluster -o jsonpath='{.status.overallStatus}'      # want: Ready
 ```
 
@@ -180,10 +180,10 @@ oc get olsconfig cluster -o jsonpath='{.status.overallStatus}'      # want: Read
 currently deployed, so these paste-and-run as-is (no `<model>` to substitute):
 
 ```bash
-M=$(oc get inferenceservice -n lightspeed-llm -o jsonpath='{.items[0].metadata.name}')
+M=$(oc get inferenceservice -n gpt-oss-20b -o jsonpath='{.items[0].metadata.name}')
 
 # the model's weight-load (watch during the 0/2 → 2/2 phase; catches an OOM at load)
-oc logs -n lightspeed-llm deploy/${M}-predictor -c kserve-container -f \
+oc logs -n gpt-oss-20b deploy/${M}-predictor -c kserve-container -f \
   | grep -iE 'loading|max model len|out of memory|application startup|error'
 # the agent loop — proves the model is actually calling cluster tools (read it live as you prompt)
 oc logs -n openshift-lightspeed deploy/lightspeed-app-server -c lightspeed-service-api -f --tail=5
@@ -200,10 +200,10 @@ snapshot, and the delta is that mode's cost:
 
 ```bash
 vllm_tokens() {   # cumulative prompt / generation / total tokens the live model has served
-  local m; m=$(oc get inferenceservice -n lightspeed-llm -o jsonpath='{.items[0].metadata.name}')
-  oc run tok-$RANDOM --rm -i --restart=Never -n lightspeed-llm \
+  local m; m=$(oc get inferenceservice -n gpt-oss-20b -o jsonpath='{.items[0].metadata.name}')
+  oc run tok-$RANDOM --rm -i --restart=Never -n gpt-oss-20b \
      --image=registry.access.redhat.com/ubi9/ubi-minimal -- \
-     curl -s "http://${m}-predictor.lightspeed-llm.svc.cluster.local:8080/metrics" 2>/dev/null \
+     curl -s "http://${m}-predictor.gpt-oss-20b.svc.cluster.local:8080/metrics" 2>/dev/null \
    | awk '/^vllm:prompt_tokens_total/{p=$NF} /^vllm:generation_tokens_total/{g=$NF} END{printf "%.0f %.0f %.0f\n",p,g,p+g}'
 }
 read P0 G0 T0 < <(vllm_tokens)     # baseline, before the Ask test
@@ -247,7 +247,7 @@ model difference, so the comparison still lands.
    regressed; see the version note in step 4). Single L4 = one model at a time, so free the GPU first:
 
    ```bash
-   oc delete inferenceservice gpt-oss-20b -n lightspeed-llm
+   oc delete inferenceservice gpt-oss-20b -n gpt-oss-20b
    ./provision.sh --switch --pattern selfhosted --model qwen3-8b \
      --instance g6.2xlarge --features agent-troubleshooting --vllm-token novalue --yes
    ```
@@ -270,7 +270,7 @@ model difference, so the comparison still lands.
    oc get olsconfig cluster -o jsonpath='overall={.status.overallStatus} model={.spec.ols.defaultModel}{"\n"}'
    #   want: overall=Ready model=qwen3-8b   (NOT "cluster not found")
    oc get pods -n openshift-lightspeed     # lightspeed-app-server back, 3/3 Running
-   oc get pods -n lightspeed-llm           # qwen3-8b-predictor 2/2 Running
+   oc get pods -n gpt-oss-20b           # qwen3-8b-predictor 2/2 Running
    ```
 
    If the OLSConfig is missing or still says gpt-oss-20b, the switch didn't finish — just re-run the
@@ -292,11 +292,11 @@ model difference, so the comparison still lands.
    Is everything in the openshift-lightspeed namespace healthy right now?
    My demo-scale app in openshift-lightspeed — is it running, and how many replicas does it have?
    Are any apps in my cluster crash-looping or stuck?
-   Something looks off with the qwen3-8b model in lightspeed-llm — can you check it and tell me what's wrong?
+   Something looks off with the qwen3-8b model in gpt-oss-20b — can you check it and tell me what's wrong?
    ```
 
    > **Name the namespace explicitly.** Qwen3 reasons hard about intent and will sometimes *second-guess*
-   > the namespace you named (e.g. answer about `lightspeed-llm` when you asked about `openshift-lightspeed`,
+   > the namespace you named (e.g. answer about `gpt-oss-20b` when you asked about `openshift-lightspeed`,
    > deciding you "probably meant" the one with the model pod). It still executes the tools correctly — just
    > on the namespace it talked itself into. Naming the namespace in the prompt (as above) keeps it on target.
 
@@ -449,7 +449,7 @@ price, annualize, and compare to the GPU's yearly cost: the business case in one
 **Reset to a clean state** between runs or before handing off:
 
 - Flip patterns: `./provision.sh --switch` (deletes the OLSConfig, applies the other).
-- Free the GPU by removing a model you switched away from: `oc delete inferenceservice <name> -n lightspeed-llm`.
+- Free the GPU by removing a model you switched away from: `oc delete inferenceservice <name> -n gpt-oss-20b`.
 - Clear config but keep the infra: `./provision.sh --uninstall` (removes OLSConfig + Route).
 - After a sandbox restart: run [HEALTH_CHECK.md](HEALTH_CHECK.md) (clean ghost pods, re-verify `contextWindowSize`).
 - Full teardown (destructive): `make uninstall-infra`.
@@ -565,15 +565,15 @@ You have no Route, so run these *inside* the cluster. If they work but the conso
 is OLSConfig wiring, not the model.
 
 ```bash
-M=$(oc get inferenceservice -n lightspeed-llm -o jsonpath='{.items[0].metadata.name}')
+M=$(oc get inferenceservice -n gpt-oss-20b -o jsonpath='{.items[0].metadata.name}')
 
 # 1) model registered?
-oc run t1 --rm -i --image=registry.access.redhat.com/ubi9/ubi-minimal --restart=Never -n lightspeed-llm -- \
-  curl -s "http://${M}-predictor.lightspeed-llm.svc.cluster.local:8080/v1/models"
+oc run t1 --rm -i --image=registry.access.redhat.com/ubi9/ubi-minimal --restart=Never -n gpt-oss-20b -- \
+  curl -s "http://${M}-predictor.gpt-oss-20b.svc.cluster.local:8080/v1/models"
 
 # 2) a real completion (end-to-end inference)?
-oc run t2 --rm -i --image=registry.access.redhat.com/ubi9/ubi-minimal --restart=Never -n lightspeed-llm -- \
-  curl -s "http://${M}-predictor.lightspeed-llm.svc.cluster.local:8080/v1/chat/completions" \
+oc run t2 --rm -i --image=registry.access.redhat.com/ubi9/ubi-minimal --restart=Never -n gpt-oss-20b -- \
+  curl -s "http://${M}-predictor.gpt-oss-20b.svc.cluster.local:8080/v1/chat/completions" \
   -H 'Content-Type: application/json' \
   -d "{\"model\":\"${M}\",\"messages\":[{\"role\":\"user\",\"content\":\"Reply with exactly: OK\"}],\"max_tokens\":64}"
 ```
@@ -632,7 +632,7 @@ watch "oc get machines -n openshift-machine-api | grep gpu; \
   oc get nodes -o custom-columns=NAME:.metadata.name,GPU:'.status.allocatable.nvidia\.com/gpu'"
 ```
 
-**`InferenceService` not `Ready`.** Check `oc logs -n lightspeed-llm -l serving.kserve.io/inferenceservice=<model>`
+**`InferenceService` not `Ready`.** Check `oc logs -n gpt-oss-20b -l serving.kserve.io/inferenceservice=<model>`
 (add `--previous` if it's crash-looping). KV-cache OOM at startup → see the crash-loop entry below.
 vLLM "unsupported model / unknown architecture" → the RHOAI runtime is too old for that model; fall
 back to a model the runtime knows (`--model qwen3-8b`, or `granite-3.3-8b-instruct` — both serve on
@@ -646,12 +646,12 @@ container's real port (`8080`) answers — the Service's `80 → 8080` mapping i
 `http://<model>-predictor.<ns>.svc.cluster.local:8080/v1`. To verify reachability:
 
 ```bash
-oc run curl-test --rm -i --image=registry.access.redhat.com/ubi9/ubi-minimal --restart=Never -n lightspeed-llm -- \
+oc run curl-test --rm -i --image=registry.access.redhat.com/ubi9/ubi-minimal --restart=Never -n gpt-oss-20b -- \
   curl -s -m 5 -o /dev/null -w "http=%{http_code}\n" \
-  http://<model>-predictor.lightspeed-llm.svc.cluster.local:8080/v1/models   # want: http=200
+  http://<model>-predictor.gpt-oss-20b.svc.cluster.local:8080/v1/models   # want: http=200
 ```
 
-**CPU vLLM image picked on a GPU cluster.** If `oc get servingruntime vllm-runtime -n lightspeed-llm
+**CPU vLLM image picked on a GPU cluster.** If `oc get servingruntime vllm-runtime -n gpt-oss-20b
 -o jsonpath='{.spec.containers[0].image}'` shows `...vllm-cpu...`, the GPU is reserved but unused and
 the model crawls. `provision.sh` resolves a CUDA image (`...vllm-cuda...`) and never the CPU one.
 
@@ -662,8 +662,8 @@ itself is fine by calling it directly — if `choices[0].message.content` is pop
 works and the issue is OLS-side timing/rendering:
 
 ```bash
-oc run t1 --rm -i --image=registry.access.redhat.com/ubi9/ubi-minimal --restart=Never -n lightspeed-llm -- \
-  curl -s http://gpt-oss-20b-predictor.lightspeed-llm.svc.cluster.local:8080/v1/chat/completions \
+oc run t1 --rm -i --image=registry.access.redhat.com/ubi9/ubi-minimal --restart=Never -n gpt-oss-20b -- \
+  curl -s http://gpt-oss-20b-predictor.gpt-oss-20b.svc.cluster.local:8080/v1/chat/completions \
   -H 'Content-Type: application/json' \
   -d '{"model":"gpt-oss-20b","messages":[{"role":"user","content":"say OK"}],"max_tokens":10}'
 ```
@@ -684,11 +684,11 @@ manually:
 
 ```bash
 # 1) runtime context (must fit the KV cache — see the OOM note below)
-oc patch inferenceservice <model> -n lightspeed-llm --type=merge -p \
+oc patch inferenceservice <model> -n gpt-oss-20b --type=merge -p \
   '{"spec":{"predictor":{"model":{"args":["--served-model-name=<model>","--max-model-len=24576","--gpu-memory-utilization=0.90","--max-num-seqs=16"]}}}}'
 # 2) OLS: match the window
 oc patch olsconfig cluster --type=merge -p \
-  '{"spec":{"llm":{"providers":[{"name":"rhoai","type":"rhoai_vllm","credentialsSecretRef":{"name":"rhoai-vllm-token"},"url":"http://<model>-predictor.lightspeed-llm.svc.cluster.local:8080/v1","models":[{"name":"<model>","contextWindowSize":24576,"parameters":{"maxTokensForResponse":1024}}]}]}}}'
+  '{"spec":{"llm":{"providers":[{"name":"rhoai","type":"rhoai_vllm","credentialsSecretRef":{"name":"rhoai-vllm-token"},"url":"http://<model>-predictor.gpt-oss-20b.svc.cluster.local:8080/v1","models":[{"name":"<model>","contextWindowSize":24576,"parameters":{"maxTokensForResponse":1024}}]}]}}}'
 # 3) reload the app-server
 oc rollout restart deploy/lightspeed-app-server -n openshift-lightspeed
 ```
@@ -709,7 +709,7 @@ memory-levers note in Lessons learned), then drop `contextWindowSize` to match.
 A single-GPU rolling update deadlocks: the surge brings the new pod up before the old releases the
 only GPU. The predictor uses `deploymentStrategy: Recreate` (set in `infra/60`) so the old pod is
 torn down first. If a live update is already wedged, free the GPU by deleting the old (Running) pod:
-`oc delete pod -n lightspeed-llm <old-predictor-pod>`.
+`oc delete pod -n gpt-oss-20b <old-predictor-pod>`.
 
 **Want a faster, friction-free model?** A 20B reasoning model on a single L4 is slow for interactive
 chat and tight on context for agent mode. For an 8B that fits comfortably and is ~2-3× faster on an L4:

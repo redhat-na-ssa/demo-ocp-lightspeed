@@ -11,8 +11,8 @@ spec:
         # The vLLM InferenceService endpoint. MUST end in /v1.
         # This placeholder is replaced at apply time from the live cluster
         # (provision.sh / `make selfhosted` read the host and patch it):
-        #   oc get inferenceservice -n lightspeed-llm -o jsonpath='{.items[0].status.url}'
-        url: https://REPLACE-INFERENCE-HOST/v1
+        #   oc get inferenceservice -n gpt-oss-20b -o jsonpath='{.items[0].status.url}'
+        url: http://gpt-oss-20b-predictor.gpt-oss-20b.svc.cluster.local/v1
         # Secret created out-of-band in openshift-lightspeed, key: apitoken
         #   oc create secret generic rhoai-vllm-token -n openshift-lightspeed \
         #     --from-literal=apitoken=<vllm-bearer-token>
