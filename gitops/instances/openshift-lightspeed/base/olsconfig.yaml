@@ -1,0 +1,9 @@
+apiVersion: ols.openshift.io/v1alpha1
+kind: OLSConfig
+metadata:
+  # OLSConfig is cluster-scoped and the name MUST be "cluster".
+  name: cluster
+spec:
+  llm:
+    providers:
+  ols:
