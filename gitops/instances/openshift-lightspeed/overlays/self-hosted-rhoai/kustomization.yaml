@@ -10,4 +10,10 @@ kind: Kustomization
 #   oc patch olsconfig cluster --type=merge -p \
 #     '{"spec":{"llm":{"providers":[{"name":"rhoai","type":"rhoai_vllm","credentialsSecretRef":{"name":"rhoai-vllm-token"},"models":[{"name":"gpt-oss-20b"}],"url":"https://<host>/v1"}]}}}'
 resources:
-  - olsconfig.yaml
+  - ../../base
+
+patches:
+  - path: patch.yaml
+    target:
+      kind: OLSConfig
+      name: cluster

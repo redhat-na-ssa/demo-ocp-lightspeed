@@ -7,4 +7,10 @@ kind: Kustomization
 #   oc create secret generic openai-api-keys -n openshift-lightspeed --from-literal=apitoken=sk-...
 #   oc apply -k overlays/saas-openai
 resources:
-  - olsconfig.yaml
+  - ../../base
+
+patches:
+  - path: patch.yaml
+    target:
+      kind: OLSConfig
+      name: cluster
