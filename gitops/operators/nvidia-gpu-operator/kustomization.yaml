@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  # remote reference
+  # - https://github.com/redhat-na-ssa/demo-ai-gitops-catalog/demos/overlays/nvidia-gpu-autoscale?ref=main
+  
+  # generate kustomization.yaml
+  # oc kustomize https://github.com/redhat-na-ssa/demo-ai-gitops-catalog/demos/overlays/nvidia-gpu-autoscale?ref=main setup.yaml
+  - setup.yaml
