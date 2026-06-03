@@ -17,8 +17,10 @@ spec:
       # RHOAI's supported vLLM runtime image. Verify the tag matches your RHOAI
       # version; provision.sh resolves the exact supported image from the cluster's
       # bundled ServingRuntime template (oc get template -n redhat-ods-applications).
-      image: quay.io/modh/vllm:rhoai-2.25-cuda
       # image: registry.redhat.io/rhoai/odh-vllm-cuda-rhel9@sha256:9302ffc252b8681317b4d40ce8b4e66a5db3511f08f6a1ff6d34e595023f85c5
+      #
+      # see https://catalog.redhat.com/en/software/containers/rhaii/vllm-cuda-rhel9/69a57f8e94c1b4cc1eca015b for images
+      image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
       command:
         - python
         - -m
