@@ -41,3 +41,4 @@ $(wtoctl | grep 'oc delete')
 ## Links
 
 - https://github.com/dmarcus-wire/ocp-lightspeed
+- https://github.com/redhat-na-ssa/demo-ocp-template
