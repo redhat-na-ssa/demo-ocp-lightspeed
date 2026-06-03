@@ -2,7 +2,7 @@ apiVersion: serving.kserve.io/v1alpha1
 kind: ServingRuntime
 metadata:
   name: vllm-runtime
-  namespace: gpt-oss-20b
+  namespace: lightspeed-llm
   labels:
     opendatahub.io/dashboard: "true"
   annotations:

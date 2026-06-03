@@ -26,16 +26,16 @@ echo; echo "== 4. DataScienceCluster (want: Ready) =="
 oc get datasciencecluster default-dsc -o jsonpath='{.status.phase}{"\n"}'
 
 echo; echo "== 5. Model serving =="
-oc get inferenceservice -n gpt-oss-20b
-oc get pods -n gpt-oss-20b
+oc get inferenceservice -n lightspeed-llm
+oc get pods -n lightspeed-llm
 
 echo; echo "== 6. Lightspeed =="
 oc get olsconfig cluster -o jsonpath='overallStatus={.status.overallStatus}{"\n"}URL={.spec.llm.providers[0].url}{"\n"}defaultModel={.spec.ols.defaultModel}{"\n"}contextWindowSize={.spec.llm.providers[0].models[0].contextWindowSize}{"\n"}'
 oc get pods -n openshift-lightspeed
 
 echo; echo "== 7. Model endpoint reachable in-cluster =="
-MODEL=$(oc get inferenceservice -n gpt-oss-20b -o jsonpath='{.items[0].metadata.name}')
-oc run gtest --rm -i --image=registry.access.redhat.com/ubi9/ubi-minimal --restart=Never -n gpt-oss-20b -- \
+MODEL=$(oc get inferenceservice -n lightspeed-llm -o jsonpath='{.items[0].metadata.name}')
+oc run gtest --rm -i --image=registry.access.redhat.com/ubi9/ubi-minimal --restart=Never -n lightspeed-llm -- \
   curl -s -m 8 "http://${MODEL}-predictor.gpt-oss-20b.svc.cluster.local:8080/v1/models"
 ```
 
@@ -126,15 +126,15 @@ Config survives shutdown; pods and the GPU node don't. The usual cleanups:
 **Node-lost ghost predictor pods** (`Init:ContainerStatusUnknown` / `Error`). The Deployment wants 1 replica; the running `2/2` pod satisfies it, so force-delete the rest (they won't respawn):
 
 ```bash
-oc get pods -n gpt-oss-20b --no-headers \
+oc get pods -n lightspeed-llm --no-headers \
   | awk '$3!="Running"{print $1}' \
-  | xargs -r oc delete pod -n gpt-oss-20b --force --grace-period=0
+  | xargs -r oc delete pod -n lightspeed-llm --force --grace-period=0
 ```
 
 **`contextWindowSize` drifted away from the model's `--max-model-len`** (e.g. shows 32768 while the model serves 24576). They must match or vLLM rejects long prompts:
 
 ```bash
-MODEL=$(oc get inferenceservice -n gpt-oss-20b -o jsonpath='{.items[0].metadata.name}')
+MODEL=$(oc get inferenceservice -n lightspeed-llm -o jsonpath='{.items[0].metadata.name}')
 oc patch olsconfig cluster --type=merge -p \
   '{"spec":{"llm":{"providers":[{"name":"rhoai","type":"rhoai_vllm","credentialsSecretRef":{"name":"rhoai-vllm-token"},"url":"http://'"$MODEL"'-predictor.gpt-oss-20b.svc.cluster.local:8080/v1","models":[{"name":"'"$MODEL"'","contextWindowSize":24576,"parameters":{"maxTokensForResponse":1024}}]}]}}}'
 ```
