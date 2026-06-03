@@ -1659,7 +1659,7 @@ spec:
         - /scripts/job.sh
         env:
         - name: INSTANCE_TYPE
-          value: g4dn.4xlarge
+          value: g6.xlarge
         - name: NAMESPACE
           valueFrom:
             fieldRef:
