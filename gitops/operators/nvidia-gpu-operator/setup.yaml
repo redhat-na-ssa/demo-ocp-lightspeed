@@ -1783,20 +1783,6 @@ spec:
   location: BannerBottom
   text: This cluster was configured via the AI GitOps catalog
 ---
-apiVersion: console.openshift.io/v1
-kind: ConsoleNotification
-metadata:
-  annotations:
-    source: https://github.com/redhat-na-ssa/demo-ai-gitops-catalog.git
-  labels:
-    demo: ai-gitops-catalog
-  name: banner-demo
-spec:
-  backgroundColor: '#9F0000'
-  color: '#FFF'
-  location: BannerTop
-  text: 'DEMO: Efficiently leveraging GPUs via autoscaling'
----
 apiVersion: monitoring.openshift.io/v1
 kind: AlertingRule
 metadata:
