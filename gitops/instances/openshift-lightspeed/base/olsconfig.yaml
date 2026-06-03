@@ -1,5 +1,43 @@
 apiVersion: ols.openshift.io/v1alpha1
 kind: OLSConfig
 metadata:
-  # OLSConfig is cluster-scoped and the name MUST be "cluster".
   name: cluster
+spec:
+  llm:
+    providers:
+      - credentialsSecretRef:
+          name: credentials
+        models:
+          - parameters:
+              toolBudgetRatio: 0.5
+            name: gpt-3.5-turbo-1106
+        name: OpenAI
+  ols:
+    toolsApprovalConfig:
+      approvalTimeout: 600
+      approvalType: tool_annotations
+    logLevel: INFO
+    deployment:
+      api:
+        replicas: 1
+      console:
+        replicas: 1
+      database:
+        replicas: 1
+    mcpKubeServerConfig:
+      timeout: 60
+    proxyConfig:
+      proxyCACertificate:
+        key: proxy-ca.crt
+    toolFilteringConfig:
+      alpha: 0.8
+      threshold: 0.01
+      topK: 10
+    maxIterations: 5
+    conversationCache:
+      postgres:
+        maxConnections: 2000
+        sharedBuffers: 256MB
+      type: postgres
+  olsDataCollector:
+    logLevel: INFO
