@@ -8,3 +8,4 @@ kind: Kustomization
 # absent (older RHOAI). Requires the RHOAI CRDs (layer 40).
 resources:
   - datasciencecluster.yaml
+  - dscinitialization.yaml

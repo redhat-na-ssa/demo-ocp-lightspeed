@@ -13,7 +13,7 @@ spec:
         managementState: Removed
         name: knative-serving
     dashboard:
-      managementState: Managed
+      managementState: Removed
     # Everything else is Removed to keep the install lean and fast for the demo.
     modelmeshserving:
       managementState: Removed
