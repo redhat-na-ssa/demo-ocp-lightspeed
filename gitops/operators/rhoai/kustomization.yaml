@@ -3,8 +3,8 @@ kind: Kustomization
 
 resources:
   # remote reference
-  # - https://github.com/redhat-na-ssa/demo-ai-gitops-catalog/components/operators/rhods-operator/operator/overlays/stable-2.22?ref=v0.19
+  # - https://github.com/redhat-na-ssa/demo-ai-gitops-catalog/components/operators/rhods-operator/operator/overlays/stable?ref=v0.19
 
   # generate kustomization.yaml
-  # oc kustomize https://github.com/redhat-na-ssa/demo-ai-gitops-catalog/components/operators/rhods-operator/operator/overlays/stable-2.22?ref=v0.19 > operator.yaml
+  # oc kustomize https://github.com/redhat-na-ssa/demo-ai-gitops-catalog/components/operators/rhods-operator/operator/overlays/stable?ref=v0.19 > operator.yaml
   - operator.yaml
