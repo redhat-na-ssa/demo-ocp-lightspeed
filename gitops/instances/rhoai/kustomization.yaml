@@ -7,5 +7,5 @@ kind: Kustomization
 # ours is rejected. provision.sh applies dscinitialization.yaml only if one is
 # absent (older RHOAI). Requires the RHOAI CRDs (layer 40).
 resources:
-  - datasciencecluster.yaml
-  - dscinitialization.yaml
+  - dsc.yaml
+  - dsci.yaml
