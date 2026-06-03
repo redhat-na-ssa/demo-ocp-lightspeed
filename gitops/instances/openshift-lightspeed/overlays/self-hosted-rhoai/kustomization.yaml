@@ -11,10 +11,3 @@ kind: Kustomization
 #     '{"spec":{"llm":{"providers":[{"name":"rhoai","type":"rhoai_vllm","credentialsSecretRef":{"name":"rhoai-vllm-token"},"models":[{"name":"gpt-oss-20b"}],"url":"https://<host>/v1"}]}}}'
 resources:
   - olsconfig.yaml
-
-# Optional features. Comment out any you do not want for a given demo.
-# components:
-#   - ../../components/route
-#   - ../../components/query-filters
-#   - ../../components/token-quota
-#   - ../../components/agent-troubleshooting

@@ -3,3 +3,10 @@ kind: Kustomization
 
 resources:
   - olsconfig.yaml
+
+# Optional features. Comment out any you do not want for a given demo.
+components:
+  - ../components/route
+  - ../components/query-filters
+  - ../components/token-quota
+  - ../components/agent-troubleshooting
