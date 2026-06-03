@@ -5,6 +5,6 @@ resources:
   # remote reference
   # - https://github.com/redhat-na-ssa/demo-ai-gitops-catalog/demos/overlays/nvidia-gpu-autoscale?ref=main
   
-  # generate kustomization.yaml
+  # generate setup.yaml
   # oc kustomize https://github.com/redhat-na-ssa/demo-ai-gitops-catalog/demos/overlays/nvidia-gpu-autoscale?ref=main setup.yaml
   - setup.yaml
