@@ -11,6 +11,7 @@ kind: Kustomization
 #     '{"spec":{"llm":{"providers":[{"name":"rhoai","type":"rhoai_vllm","credentialsSecretRef":{"name":"rhoai-vllm-token"},"models":[{"name":"gpt-oss-20b"}],"url":"https://<host>/v1"}]}}}'
 resources:
   - ../../base
+  - secret.yaml
 
 patches:
   - path: patch.yaml
