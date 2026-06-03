@@ -2,7 +2,7 @@ apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
   name: gpt-oss-20b
-  namespace: lightspeed-llm
+  namespace: gpt-oss-20b
   labels:
     opendatahub.io/dashboard: "true"
   annotations:

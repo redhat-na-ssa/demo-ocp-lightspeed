@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: lightspeed-llm
+  name: gpt-oss-20b
   labels:
     # Marks this as an OpenShift AI data-science project and tells KServe (not
     # ModelMesh) to manage serving in this namespace.
