@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - lightspeed-operator
   - rhoai
+  - web-terminal
