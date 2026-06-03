@@ -203,7 +203,7 @@ vllm_tokens() {   # cumulative prompt / generation / total tokens the live model
   local m; m=$(oc get inferenceservice -n lightspeed-llm -o jsonpath='{.items[0].metadata.name}')
   oc run tok-$RANDOM --rm -i --restart=Never -n lightspeed-llm \
      --image=registry.access.redhat.com/ubi9/ubi-minimal -- \
-     curl -s "http://${m}-predictor.gpt-oss-20b.svc.cluster.local:8080/metrics" 2>/dev/null \
+     curl -s "http://${m}-predictor.lightspeed-llm.svc.cluster.local:8080/metrics" 2>/dev/null \
    | awk '/^vllm:prompt_tokens_total/{p=$NF} /^vllm:generation_tokens_total/{g=$NF} END{printf "%.0f %.0f %.0f\n",p,g,p+g}'
 }
 read P0 G0 T0 < <(vllm_tokens)     # baseline, before the Ask test
@@ -292,11 +292,11 @@ model difference, so the comparison still lands.
    Is everything in the openshift-lightspeed namespace healthy right now?
    My demo-scale app in openshift-lightspeed — is it running, and how many replicas does it have?
    Are any apps in my cluster crash-looping or stuck?
-   Something looks off with the qwen3-8b model in gpt-oss-20b — can you check it and tell me what's wrong?
+   Something looks off with the qwen3-8b model in lightspeed-llm — can you check it and tell me what's wrong?
    ```
 
    > **Name the namespace explicitly.** Qwen3 reasons hard about intent and will sometimes *second-guess*
-   > the namespace you named (e.g. answer about `gpt-oss-20b` when you asked about `openshift-lightspeed`,
+   > the namespace you named (e.g. answer about `lightspeed-llm` when you asked about `openshift-lightspeed`,
    > deciding you "probably meant" the one with the model pod). It still executes the tools correctly — just
    > on the namespace it talked itself into. Naming the namespace in the prompt (as above) keeps it on target.
 
@@ -569,11 +569,11 @@ M=$(oc get inferenceservice -n lightspeed-llm -o jsonpath='{.items[0].metadata.n
 
 # 1) model registered?
 oc run t1 --rm -i --image=registry.access.redhat.com/ubi9/ubi-minimal --restart=Never -n lightspeed-llm -- \
-  curl -s "http://${M}-predictor.gpt-oss-20b.svc.cluster.local:8080/v1/models"
+  curl -s "http://${M}-predictor.lightspeed-llm.svc.cluster.local:8080/v1/models"
 
 # 2) a real completion (end-to-end inference)?
 oc run t2 --rm -i --image=registry.access.redhat.com/ubi9/ubi-minimal --restart=Never -n lightspeed-llm -- \
-  curl -s "http://${M}-predictor.gpt-oss-20b.svc.cluster.local:8080/v1/chat/completions" \
+  curl -s "http://${M}-predictor.lightspeed-llm.svc.cluster.local:8080/v1/chat/completions" \
   -H 'Content-Type: application/json' \
   -d "{\"model\":\"${M}\",\"messages\":[{\"role\":\"user\",\"content\":\"Reply with exactly: OK\"}],\"max_tokens\":64}"
 ```
@@ -648,7 +648,7 @@ container's real port (`8080`) answers — the Service's `80 → 8080` mapping i
 ```bash
 oc run curl-test --rm -i --image=registry.access.redhat.com/ubi9/ubi-minimal --restart=Never -n lightspeed-llm -- \
   curl -s -m 5 -o /dev/null -w "http=%{http_code}\n" \
-  http://<model>-predictor.gpt-oss-20b.svc.cluster.local:8080/v1/models   # want: http=200
+  http://<model>-predictor.lightspeed-llm.svc.cluster.local:8080/v1/models   # want: http=200
 ```
 
 **CPU vLLM image picked on a GPU cluster.** If `oc get servingruntime vllm-runtime -n lightspeed-llm
@@ -663,7 +663,7 @@ works and the issue is OLS-side timing/rendering:
 
 ```bash
 oc run t1 --rm -i --image=registry.access.redhat.com/ubi9/ubi-minimal --restart=Never -n lightspeed-llm -- \
-  curl -s http://gpt-oss-20b-predictor.gpt-oss-20b.svc.cluster.local:8080/v1/chat/completions \
+  curl -s http://gpt-oss-20b-predictor.lightspeed-llm.svc.cluster.local:8080/v1/chat/completions \
   -H 'Content-Type: application/json' \
   -d '{"model":"gpt-oss-20b","messages":[{"role":"user","content":"say OK"}],"max_tokens":10}'
 ```
@@ -688,7 +688,7 @@ oc patch inferenceservice <model> -n lightspeed-llm --type=merge -p \
   '{"spec":{"predictor":{"model":{"args":["--served-model-name=<model>","--max-model-len=24576","--gpu-memory-utilization=0.90","--max-num-seqs=16"]}}}}'
 # 2) OLS: match the window
 oc patch olsconfig cluster --type=merge -p \
-  '{"spec":{"llm":{"providers":[{"name":"rhoai","type":"rhoai_vllm","credentialsSecretRef":{"name":"rhoai-vllm-token"},"url":"http://<model>-predictor.gpt-oss-20b.svc.cluster.local:8080/v1","models":[{"name":"<model>","contextWindowSize":24576,"parameters":{"maxTokensForResponse":1024}}]}]}}}'
+  '{"spec":{"llm":{"providers":[{"name":"rhoai","type":"rhoai_vllm","credentialsSecretRef":{"name":"rhoai-vllm-token"},"url":"http://<model>-predictor.lightspeed-llm.svc.cluster.local:8080/v1","models":[{"name":"<model>","contextWindowSize":24576,"parameters":{"maxTokensForResponse":1024}}]}]}}}'
 # 3) reload the app-server
 oc rollout restart deploy/lightspeed-app-server -n openshift-lightspeed
 ```

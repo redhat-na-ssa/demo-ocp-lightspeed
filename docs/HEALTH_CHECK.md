@@ -36,7 +36,7 @@ oc get pods -n openshift-lightspeed
 echo; echo "== 7. Model endpoint reachable in-cluster =="
 MODEL=$(oc get inferenceservice -n lightspeed-llm -o jsonpath='{.items[0].metadata.name}')
 oc run gtest --rm -i --image=registry.access.redhat.com/ubi9/ubi-minimal --restart=Never -n lightspeed-llm -- \
-  curl -s -m 8 "http://${MODEL}-predictor.gpt-oss-20b.svc.cluster.local:8080/v1/models"
+  curl -s -m 8 "http://${MODEL}-predictor.lightspeed-llm.svc.cluster.local:8080/v1/models"
 ```
 
 ## What "healthy" looks like
@@ -58,7 +58,7 @@ Same checks, but auto-detects the model and prints a ✓/✗ per layer with a fi
 #!/usr/bin/env bash
 # Verify a self-hosted OpenShift Lightspeed install is fully up. Read-only.
 set -uo pipefail
-LS_NS="openshift-lightspeed"; LLM_NS="gpt-oss-20b"
+LS_NS="openshift-lightspeed"; LLM_NS="lightspeed-llm"
 if [ -t 1 ]; then G=$'\033[32m'; Y=$'\033[33m'; R=$'\033[31m'; C=$'\033[36m'; N=$'\033[0m'; else G=; Y=; R=; C=; N=; fi
 pass(){ printf "%s\n" "${G}  ✓${N} $*"; }; fail(){ printf "%s\n" "${R}  ✗${N} $*"; FAILED=1; }
 warn(){ printf "%s\n" "${Y}  !${N} $*"; }; head(){ printf "\n%s\n" "${C}==> $*${N}"; }
@@ -136,7 +136,7 @@ oc get pods -n lightspeed-llm --no-headers \
 ```bash
 MODEL=$(oc get inferenceservice -n lightspeed-llm -o jsonpath='{.items[0].metadata.name}')
 oc patch olsconfig cluster --type=merge -p \
-  '{"spec":{"llm":{"providers":[{"name":"rhoai","type":"rhoai_vllm","credentialsSecretRef":{"name":"rhoai-vllm-token"},"url":"http://'"$MODEL"'-predictor.gpt-oss-20b.svc.cluster.local:8080/v1","models":[{"name":"'"$MODEL"'","contextWindowSize":24576,"parameters":{"maxTokensForResponse":1024}}]}]}}}'
+  '{"spec":{"llm":{"providers":[{"name":"rhoai","type":"rhoai_vllm","credentialsSecretRef":{"name":"rhoai-vllm-token"},"url":"http://'"$MODEL"'-predictor.lightspeed-llm.svc.cluster.local:8080/v1","models":[{"name":"'"$MODEL"'","contextWindowSize":24576,"parameters":{"maxTokensForResponse":1024}}]}]}}}'
 ```
 
 **App-server serving stale config** after the model recovered (`overallStatus` stuck `NotReady`, or "connection error" though the endpoint curls fine):
