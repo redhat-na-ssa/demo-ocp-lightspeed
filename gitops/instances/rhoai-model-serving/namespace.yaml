@@ -2,11 +2,11 @@ apiVersion: v1
 kind: Namespace
 metadata:
   annotations:
-    openshift.io/display-name: GPT OSS 20b Model Serving
+    openshift.io/display-name: Demo - LLM Serving for lightspeed
   labels:
     # Marks this as an OpenShift AI data-science project and tells KServe (not
     # ModelMesh) to manage serving in this namespace.
     opendatahub.io/dashboard: "true"
     modelmesh-enabled: "false"
     openshift.io/cluster-monitoring: "true"
-  name: gpt-oss-20b
+  name: lightspeed-llm
