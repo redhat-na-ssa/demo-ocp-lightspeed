@@ -15,10 +15,10 @@ spec:
         # NOTICE: There could be an issue related to rawDeploymentServiceConfig
         url: http://gpt-oss-20b-predictor.lightspeed-llm.svc.cluster.local/v1
         # Secret created out-of-band in openshift-lightspeed, key: apitoken
-        #   oc create secret generic rhoai-vllm-token -n openshift-lightspeed \
+        #   oc create secret generic rhoai-api-key -n openshift-lightspeed \
         #     --from-literal=apitoken=<vllm-bearer-token>
         credentialsSecretRef:
-          name: rhoai-vllm-token
+          name: rhoai-api-key
         models:
           # Must match the served model name (--served-model-name) from infra/60.
           - name: gpt-oss-20b

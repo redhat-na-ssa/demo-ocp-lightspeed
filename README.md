@@ -49,7 +49,11 @@ ocp_aws_machineset_create_gpu g6.xlarge
 
 # scale machineset to at least 1
 ocp_machineset_scale 1
+```
 
+Deploy the self hosted demo
+
+```sh
 # setup self hosted demo
 apply_firmly gitops
 ```
