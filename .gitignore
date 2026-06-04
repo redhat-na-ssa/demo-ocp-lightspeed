@@ -1,0 +1,11 @@
+# ignore local files
+scratch/
+
+# Never commit credentials or cluster access files
+*.env
+*credentials*
+kubeconfig
+*.kubeconfig
+
+# special mac files
+.DS_Store
