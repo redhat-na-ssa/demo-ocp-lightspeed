@@ -37,8 +37,3 @@ oc apply -k https://github.com/redhat-na-ssa/demo-ai-gitops-catalog/demos/compon
 # delete old web terminal
 $(wtoctl | grep 'oc delete')
 ```
-
-## Links
-
-- https://github.com/dmarcus-wire/ocp-lightspeed
-- https://github.com/redhat-na-ssa/demo-ocp-template

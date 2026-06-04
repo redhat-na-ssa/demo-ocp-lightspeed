@@ -8,7 +8,9 @@ spec:
       managementState: Managed
       # RawDeployment = plain Kubernetes Deployments/Services for model serving;
       # no Knative Serverless or Service Mesh required.
+      # rawDeploymentServiceConfig = Headed if you want normal k8s port management
       defaultDeploymentMode: RawDeployment
+      rawDeploymentServiceConfig: Headed
       serving:
         managementState: Removed
         name: knative-serving
