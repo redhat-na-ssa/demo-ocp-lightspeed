@@ -1,12 +1,12 @@
 apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
-  name: qwen3-14b
+  name: qwen3-8b
   namespace: lightspeed-llm
   labels:
     opendatahub.io/dashboard: "true"
   annotations:
-    openshift.io/display-name: qwen3-14b
+    openshift.io/display-name: qwen3-8b
     serving.kserve.io/deploymentMode: RawDeployment
 spec:
   predictor:
@@ -17,9 +17,9 @@ spec:
       modelFormat:
         name: vLLM
       runtime: vllm-runtime
-      storageUri: oci://quay.io/redhat-ai-services/modelcar-catalog:qwen3-14b
+      storageUri: oci://quay.io/redhat-ai-services/modelcar-catalog:qwen3-8b
       args:
-        - "--served-model-name=qwen3-14b"
+        - "--served-model-name=qwen3-8b"
         - "--max-model-len=24576"
         - "--gpu-memory-utilization=0.90"
         - "--max-num-seqs=16"
