@@ -3,4 +3,4 @@ kind: Kustomization
 
 components:
   - components/gpt-oss-20b
-  - components/qwen3-8b
+  # - components/qwen3-8b
