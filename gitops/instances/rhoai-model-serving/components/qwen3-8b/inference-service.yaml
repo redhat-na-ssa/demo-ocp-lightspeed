@@ -20,9 +20,9 @@ spec:
       storageUri: oci://quay.io/redhat-ai-services/modelcar-catalog:qwen3-8b
       args:
         - "--served-model-name=qwen3-8b"
-        - "--max-model-len=24576"
-        - "--gpu-memory-utilization=0.90"
-        - "--max-num-seqs=16"
+        # - "--max-model-len=24576"
+        # - "--gpu-memory-utilization=0.95"
+        # - "--max-num-seqs=16"
       resources:
         requests:
           cpu: "2"
