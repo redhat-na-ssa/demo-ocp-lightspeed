@@ -9,6 +9,7 @@ spec:
       # RawDeployment = plain Kubernetes Deployments/Services for model serving;
       # no Knative Serverless or Service Mesh required.
       # rawDeploymentServiceConfig = Headed if you want normal k8s port management
+      # see https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.25/html/installing_and_uninstalling_openshift_ai_self-managed/installing-the-single-model-serving-platform_component-install#configuring-automated-installation-of-kserve_component-install
       defaultDeploymentMode: RawDeployment
       rawDeploymentServiceConfig: Headed
       serving:
