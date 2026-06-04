@@ -37,3 +37,19 @@ oc apply -k https://github.com/redhat-na-ssa/demo-ai-gitops-catalog/demos/compon
 # delete old web terminal
 $(wtoctl | grep 'oc delete')
 ```
+
+Setup cluster nodes
+
+```sh
+# isolate the control plane
+ocp_control_nodes_not_schedulable
+
+# setup L40 single GPU machine set
+ocp_aws_machineset_create_gpu g6.xlarge
+
+# scale machineset to at least 1
+ocp_machineset_scale 1
+
+# setup self hosted demo
+apply_firmly gitops
+```
