@@ -45,7 +45,7 @@ Setup cluster nodes
 ocp_control_nodes_not_schedulable
 
 # setup L40 single GPU machine set
-ocp_aws_machineset_create_gpu g6.xlarge
+ocp_aws_machineset_create_gpu g6.2xlarge
 
 # scale machineset to at least 1
 ocp_machineset_scale 1
