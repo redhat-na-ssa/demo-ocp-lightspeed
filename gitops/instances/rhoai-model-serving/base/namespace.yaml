@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Namespace
 metadata:
   annotations:
-    openshift.io/display-name: Demo - LLM Serving for lightspeed
+    openshift.io/display-name: Demo - LLM Serving for Lightspeed
   labels:
     # Marks this as an OpenShift AI data-science project and tells KServe (not
     # ModelMesh) to manage serving in this namespace.
