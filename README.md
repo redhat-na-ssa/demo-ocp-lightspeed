@@ -16,7 +16,6 @@ NOTE: The node sizes below are the **recommended minimum** to select for provisi
   - 1 x GPU - `g6.2xlarge` or `g6e.2xlarge`
 - <a href="https://demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte.ocp4-single-node.prod&utm_source=webapp&utm_medium=share-link" target="_blank">One Node OpenShift</a>
   - 1 x Control Plane - `m6a.2xlarge`
-- <a href="https://demo.redhat.com/catalog?item=babylon-catalog-prod/community-content.com-mlops-wksp.prod&utm_source=webapp&utm_medium=share-link" target="_blank">MLOps Demo: Data Science & Edge Practice</a>
 
 ## Getting Started
 
