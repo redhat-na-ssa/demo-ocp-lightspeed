@@ -1,8 +1,11 @@
 # Demo Lightspeed on OpenShift
 
+- [Evaluate OpenShift Lightspeed - Offical Docs](https://docs.redhat.com/en/documentation/red_hat_openshift_lightspeed/1.0/html/about/ols-about-openshift-lightspeed)
+- [Mastering OpenShift Lightspeed](https://dialvare.github.io/showroom-openshift-lightspeed/modules/index.html)
+
 ## Prerequisites - Get a cluster
 
-- OpenShift 4.16+
+- OpenShift 4.18+
   - role: `cluster-admin` - for all [demo](demos) or [cluster](clusters) configs
   - role: `self-provisioner` - for namespaced components
 
@@ -10,12 +13,11 @@
 
 NOTE: The node sizes below are the **recommended minimum** to select for provisioning
 
+- <a href="https://catalog.demo.redhat.com/catalog/babylon-catalog-prod?item=babylon-catalog-prod/published.ocp4-lightspeed.prod&utm_source=webapp&utm_medium=share-link" target="_blank">OpenShift Lightspeed Demo</a>
 - <a href="https://demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte.sandbox-ocp.prod&utm_source=webapp&utm_medium=share-link" target="_blank">AWS with OpenShift Open Environment</a>
   - 1 x Control Plane - `m6a.2xlarge`
   - 0 x Workers - `m6a.2xlarge`
   - 1 x GPU - `g6.2xlarge` or `g6e.2xlarge`
-- <a href="https://demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte.ocp4-single-node.prod&utm_source=webapp&utm_medium=share-link" target="_blank">One Node OpenShift</a>
-  - 1 x Control Plane - `m6a.2xlarge`
 
 ## Getting Started
 
