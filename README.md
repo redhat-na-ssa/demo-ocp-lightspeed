@@ -58,3 +58,8 @@ Deploy the self hosted demo
 # setup self hosted demo
 apply_firmly gitops
 ```
+
+## Additional Links
+
+- https://github.com/dialvare/showroom-openshift-lightspeed
+- https://github.com/rhpds/rhpds.openshift_lightspeed_demo
